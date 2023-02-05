@@ -223,8 +223,8 @@ namespace VmmFrost
                     }
 
                     cb = (uint)PAGE_SIZE; // set bytes to read next page
-                    if (((pageOffset + size) & 0xfff) != 0)
-                        cb = ((pageOffset + size) & 0xfff);
+                    if (bytesCopied + cb > size)
+                        cb = size - (uint)bytesCopied;
 
                     pageOffset = 0; // Next page (if any) should start at 0
                 }
