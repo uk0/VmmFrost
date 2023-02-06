@@ -133,17 +133,10 @@ namespace VmmFrost
                 ulong addr = 0x0;
                 if (entry.Addr is not null) // Ensure address field is set
                 {
-                    if (entry.Addr is ScatterReadEntry addrObj) // Check if the address references another ScatterRead Result
-                    {
-                        if (addrObj.TryGetResult<ulong>(out var refAddr)) // Use the referenced ScatterReadEntry's 'result' as the address
-                        {
-                            addr = refAddr;
-                        }
-                    }
-                    else if (entry.Addr is ulong addrUlong)
-                    {
+                    if (entry.Addr is ulong addrUlong)
                         addr = addrUlong;
-                    }
+                    else if (entry.Addr is ScatterReadEntry addrObj) // Check if the address references another ScatterRead Result
+                        addrObj.TryGetResult<ulong>(out addr); // Use the referenced ScatterReadEntry's 'result' as the address
                 }
                 entry.Addr = addr;
 
@@ -152,17 +145,11 @@ namespace VmmFrost
                 if (entry.Type.IsValueType) size = (uint)Marshal.SizeOf(entry.Type);
                 else if (entry.Size is not null) // Check if size field is set
                 {
-                    if (entry.Size is ScatterReadEntry sizeObj) // Check if the size references another ScatterRead Result
-                    {
-                        if (sizeObj.TryGetResult<int>(out var refSize))
-                        {
-                            size = (uint)refSize;
-                        }
-                    }
-                    else if (entry.Size is int sizeInt) // Check if the size references another ScatterRead Result
-                    {
+                    if (entry.Size is int sizeInt) // Check if the size references another ScatterRead Result
                         size = (uint)sizeInt;
-                    }
+                    else if (entry.Size is ScatterReadEntry sizeObj) // Check if the size references another ScatterRead Result
+                        if (sizeObj.TryGetResult<int>(out var refSize))
+                            size = (uint)refSize;
                 }
                 entry.Size = (int)size;
                 size *= (uint)entry.SizeMult;
@@ -226,7 +213,7 @@ namespace VmmFrost
                     if (bytesCopied + cb > size)
                         cb = size - (uint)bytesCopied;
 
-                    pageOffset = 0; // Next page (if any) should start at 0
+                    pageOffset = 0x0; // Next page (if any) should start at 0x0
                 }
                 try // Parse buffer and set result
                 {
