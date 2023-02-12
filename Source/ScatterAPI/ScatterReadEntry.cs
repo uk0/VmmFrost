@@ -56,10 +56,9 @@
         public bool TryGetResult<T>(out T result)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            if (Result is not null &&
-                Result is T)
+            if (this.Result is T tObj)
             {
-                result = (T)Result;
+                result = tObj;
                 return true;
             }
             result = default;
