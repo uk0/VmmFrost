@@ -16,8 +16,4 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Source\Vmmsharp\" />
-  </ItemGroup>
-
 </Project>

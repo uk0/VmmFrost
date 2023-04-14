@@ -1,26 +1,23 @@
 ﻿namespace VmmFrost.ScatterAPI
 {
     /// <summary>
-    /// Maps a Scatter Read Operation.
+    /// Top level object defining a scatter read operation. Create one of these in a local context.
     /// </summary>
-    public sealed class ScatterReadMap
+    public class ScatterReadMap
     {
-        private readonly List<ScatterReadRound> _rounds = new();
-        private readonly Dictionary<int, Dictionary<int, ScatterReadEntry>> _results = new();
-        private readonly VmmFrostHandle _handle;
+        protected List<ScatterReadRound> Rounds { get; } = new();
+        protected Dictionary<int, Dictionary<int, IScatterEntry>> _results { get; } = new();
         /// <summary>
         /// Contains results from Scatter Read after Execute() is performed. First key is Index, Second Key ID.
         /// </summary>
-        public IReadOnlyDictionary<int, Dictionary<int, ScatterReadEntry>> Results { get => _results; }
+        public IReadOnlyDictionary<int, Dictionary<int, IScatterEntry>> Results => _results;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="indexCount">Number of indexes in the scatter read loop.</param>
-        /// <param name="handle">VmmFrost handle to read with.</param>
-        public ScatterReadMap(int indexCount, VmmFrostHandle handle)
+        public ScatterReadMap(int indexCount)
         {
-            _handle = handle;
             for (int i = 0; i < indexCount; i++)
             {
                 _results.Add(i, new());
@@ -30,22 +27,23 @@
         /// <summary>
         /// Executes Scatter Read operation as defined per the map.
         /// </summary>
-        public void Execute()
+        public void Execute(MemDMA mem)
         {
-            foreach (var round in _rounds)
+            foreach (var round in Rounds)
             {
-                round.Run(_handle);
+                round.Run(mem);
             }
         }
         /// <summary>
+        /// (Base)
         /// Add scatter read rounds to the operation. Each round is a successive scatter read, you may need multiple
         /// rounds if you have reads dependent on earlier scatter reads result(s).
         /// </summary>
         /// <returns>ScatterReadRound object.</returns>
-        public ScatterReadRound AddRound(uint pid, bool useCache = true)
+        public virtual ScatterReadRound AddRound(bool useCache = true)
         {
-            var round = new ScatterReadRound(_results, pid, useCache);
-            _rounds.Add(round);
+            var round = new ScatterReadRound(_results, useCache);
+            Rounds.Add(round);
             return round;
         }
     }

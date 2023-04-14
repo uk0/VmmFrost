@@ -3,7 +3,7 @@
 namespace VmmFrost.ScatterAPI
 {
     /// <summary>
-    /// Defines a Single Write in a Scatter Write Operation.
+    /// Defines a single Write in a Scatter Operation.
     /// </summary>
     public readonly struct ScatterWriteEntry
     {
@@ -26,7 +26,7 @@ namespace VmmFrost.ScatterAPI
         public static ScatterWriteEntry Create<T>(ulong va, T value)
             where T : struct
         {
-            var bytes = new byte[Marshal.SizeOf(typeof(T))];
+            var bytes = new byte[Marshal.SizeOf<T>()];
             MemoryMarshal.Write(bytes, ref value);
             return new ScatterWriteEntry()
             {

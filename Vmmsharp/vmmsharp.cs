@@ -18,7 +18,7 @@ using System.Collections.Generic;
  *  
  */
 
-namespace VmmFrost.Vmmsharp /* Namespace Changed by Frost, used to be 'vmmsharp' */
+namespace vmmsharp
 {
     public struct MEM_SCATTER
     {

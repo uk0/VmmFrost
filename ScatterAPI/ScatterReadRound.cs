@@ -1,24 +1,25 @@
-﻿namespace VmmFrost.ScatterAPI
+﻿using System.Runtime.InteropServices;
+
+namespace VmmFrost.ScatterAPI
 {
     /// <summary>
     /// Defines a scatter read round. Each round will execute a single scatter read. If you have reads that
     /// are dependent on previous reads (chained pointers for example), you may need multiple rounds.
     /// </summary>
-    public sealed class ScatterReadRound
+    public class ScatterReadRound
     {
-        private readonly Dictionary<int, Dictionary<int, ScatterReadEntry>> _results;
-        private readonly uint _pid;
         private readonly bool _useCache;
-        private readonly List<ScatterReadEntry> _entries = new();
-        public ScatterReadRound(Dictionary<int, Dictionary<int, ScatterReadEntry>> results, uint pid, bool useCache)
+        protected Dictionary<int, Dictionary<int, IScatterEntry>> Results { get; }
+        protected List<IScatterEntry> Entries { get; } = new();
+        public ScatterReadRound(Dictionary<int, Dictionary<int, IScatterEntry>> results, bool useCache)
         {
-            _results = results;
-            _pid = pid;
+            Results = results;
             _useCache = useCache;
         }
 
         /// <summary>
-        /// Adds a single Scatter Read Entry.
+        /// (Base)
+        /// Adds a single Scatter Read 
         /// </summary>
         /// <param name="index">For loop index this is associated with.</param>
         /// <param name="id">Random ID number to identify the entry's purpose.</param>
@@ -29,28 +30,27 @@
         /// <param name="offset">Optional offset to add to address (usually in the event that you pass a
         /// ScatterReadEntry to the Addr field).</param>
         /// <returns></returns>
-        public ScatterReadEntry AddEntry<T>(int index, int id, object addr, object size = null, uint offset = 0x0)
+        public virtual ScatterReadEntry<T> AddEntry<T>(int index, int id, object addr, object size = null, uint offset = 0x0)
         {
-            var entry = new ScatterReadEntry()
+            var entry = new ScatterReadEntry<T>()
             {
                 Index = index,
                 Id = id,
                 Addr = addr,
-                Type = typeof(T),
                 Size = size,
                 Offset = offset
             };
-            _results[index].Add(id, entry);
-            _entries.Add(entry);
+            Results[index].Add(id, entry);
+            Entries.Add(entry);
             return entry;
         }
 
         /// <summary>
-        /// Internal use only do not use.
+        /// ** Internal API use only do not use **
         /// </summary>
-        public void Run(VmmFrostHandle handle)
+        internal void Run(MemDMA mem)
         {
-            handle.ReadScatter(_pid, _useCache, _entries.ToArray());
+            mem.ReadScatter(CollectionsMarshal.AsSpan(Entries), _useCache);
         }
     }
 }
