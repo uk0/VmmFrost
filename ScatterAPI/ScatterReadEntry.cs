@@ -53,17 +53,17 @@ namespace VmmFrost.ScatterAPI
         public ulong ParseAddr()
         {
             ulong addr = 0x0;
-            if (this.Addr is ulong ptr1)
-                addr = ptr1;
-            else if (this.Addr is IScatterEntry ptrObj)
+            if (this.Addr is ulong p1)
+                addr = p1;
+            else if (this.Addr is MemPointer p2)
+                addr = p2;
+            else if (this.Addr is IScatterEntry ptrObj) // Check if the addr references another ScatterRead Result
             {
-                if (ptrObj.TryGetResult<MemPointer>(out var ptr2))
-                    addr = ptr2;
+                if (ptrObj.TryGetResult<MemPointer>(out var p3))
+                    addr = p3;
                 else
                     ptrObj.TryGetResult(out addr);
             }
-            else if (this.Addr is MemPointer ptr3)
-                addr = ptr3;
             this.Addr = addr;
             return addr;
         }
@@ -80,7 +80,7 @@ namespace VmmFrost.ScatterAPI
             int size = 0;
             if (this.Type.IsValueType)
                 size = Marshal.SizeOf<T>();
-            else if (this.Size is int sizeInt) // Check if the size references another ScatterRead Result
+            else if (this.Size is int sizeInt)
                 size = sizeInt;
             else if (this.Size is IScatterEntry sizeObj) // Check if the size references another ScatterRead Result
                 sizeObj.TryGetResult(out size);
