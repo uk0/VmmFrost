@@ -53,20 +53,17 @@ namespace VmmFrost.ScatterAPI
         public ulong ParseAddr()
         {
             ulong addr = 0x0;
-            if (this.Addr is not null) // Ensure address field is set
+            if (this.Addr is ulong ptr1)
+                addr = ptr1;
+            else if (this.Addr is IScatterEntry ptrObj)
             {
-                if (this.Addr is ulong ptr1)
-                    addr = ptr1;
-                else if (this.Addr is IScatterEntry ptrObj)
-                {
-                    if (ptrObj.TryGetResult<MemPointer>(out var ptr2))
-                        addr = ptr2;
-                    else
-                        ptrObj.TryGetResult(out addr);
-                }
-                else if (this.Addr is MemPointer ptr3)
-                    addr = ptr3;
+                if (ptrObj.TryGetResult<MemPointer>(out var ptr2))
+                    addr = ptr2;
+                else
+                    ptrObj.TryGetResult(out addr);
             }
+            else if (this.Addr is MemPointer ptr3)
+                addr = ptr3;
             this.Addr = addr;
             return addr;
         }
@@ -83,16 +80,10 @@ namespace VmmFrost.ScatterAPI
             int size = 0;
             if (this.Type.IsValueType)
                 size = Marshal.SizeOf<T>();
-            else if (this.Size is not null) // Check if size field is set
-            {
-                if (this.Size is int sizeInt) // Check if the size references another ScatterRead Result
-                    size = sizeInt;
-                else if (this.Size is IScatterEntry sizeObj) // Check if the size references another ScatterRead Result
-                {
-                    if (sizeObj.TryGetResult<int>(out var refSize))
-                        size = refSize;
-                }
-            }
+            else if (this.Size is int sizeInt) // Check if the size references another ScatterRead Result
+                size = sizeInt;
+            else if (this.Size is IScatterEntry sizeObj) // Check if the size references another ScatterRead Result
+                sizeObj.TryGetResult(out size);
             this.Size = size;
             return size;
         }
