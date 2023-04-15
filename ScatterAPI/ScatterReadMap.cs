@@ -1,12 +1,13 @@
 ﻿namespace VmmFrost.ScatterAPI
 {
     /// <summary>
-    /// Top level object defining a scatter read operation. Create one of these in a local context.
+    /// Provides mapping for a Scatter Read Operation.
+    /// May contain multiple Scatter Read Rounds.
     /// </summary>
     public class ScatterReadMap
     {
         protected List<ScatterReadRound> Rounds { get; } = new();
-        protected Dictionary<int, Dictionary<int, IScatterEntry>> _results { get; } = new();
+        protected readonly Dictionary<int, Dictionary<int, IScatterEntry>> _results = new();
         /// <summary>
         /// Contains results from Scatter Read after Execute() is performed. First key is Index, Second Key ID.
         /// </summary>

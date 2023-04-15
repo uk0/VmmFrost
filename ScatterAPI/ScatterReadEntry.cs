@@ -4,40 +4,41 @@ using System.Text;
 namespace VmmFrost.ScatterAPI
 {
     /// <summary>
-    /// Single scatter read  Use ScatterReadRound.AddEntry() to construct this class.
+    /// Single scatter read.
+    /// Use ScatterReadRound.AddEntry() to construct this class.
     /// </summary>
     public class ScatterReadEntry<T> : IScatterEntry
     {
         #region Properties
 
         /// <summary>
-        /// Entry Index
+        /// Entry Index.
         /// </summary>
         public int Index { get; init; }
         /// <summary>
-        /// Entry ID
+        /// Entry ID.
         /// </summary>
         public int Id { get; init; }
         /// <summary>
-        /// Can be an ulong or another ScatterReadEntry
+        /// Can be a ulong or another ScatterReadEntry.
         /// </summary>
-        public object Addr { get; set; } = (ulong)0x0;
+        public object Addr { get; set; }
         /// <summary>
-        /// Offset amount to be added to Address.
+        /// Offset to the Base Address.
         /// </summary>
-        public uint Offset { get; init; } = 0x0;
+        public uint Offset { get; init; }
         /// <summary>
-        /// Defines the type.
+        /// Defines the type based on <typeparamref name="T"/>
         /// </summary>
         public Type Type { get; } = typeof(T);
         /// <summary>
-        /// Can be an int32 or another ScatterReadEntry
+        /// Can be an int32 or another ScatterReadEntry.
         /// </summary>
         public object Size { get; set; }
         /// <summary>
-        /// True if the scatter read has failed. Result will also be null.
+        /// True if the Scatter Read has failed.
         /// </summary>
-        public bool IsFailed { get; set; } = false;
+        public bool IsFailed { get; set; }
         /// <summary>
         /// Scatter Read Result.
         /// </summary>

@@ -3,7 +3,7 @@
 namespace VmmFrost.ScatterAPI
 {
     /// <summary>
-    /// Defines a scatter read round. Each round will execute a single scatter read. If you have reads that
+    /// Defines a Scatter Read Round. Each round will execute a single scatter read. If you have reads that
     /// are dependent on previous reads (chained pointers for example), you may need multiple rounds.
     /// </summary>
     public class ScatterReadRound

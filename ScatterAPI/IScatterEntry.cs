@@ -3,33 +3,33 @@
     public interface IScatterEntry
     {
         /// <summary>
-        /// Entry Index
+        /// Entry Index.
         /// </summary>
-        public int Index { get; init; }
+        int Index { get; init; }
         /// <summary>
-        /// Entry ID
+        /// Entry ID.
         /// </summary>
-        public int Id { get; init; }
+        int Id { get; init; }
         /// <summary>
-        /// Can be an ulong or another ScatterReadEntry
+        /// Can be a ulong or another ScatterReadEntry.
         /// </summary>
-        public object Addr { get; set; }
+        object Addr { get; set; }
         /// <summary>
-        /// Offset amount to be added to Address.
+        /// Offset to the Base Address.
         /// </summary>
-        public uint Offset { get; init; }
+        uint Offset { get; init; }
         /// <summary>
-        /// Defines the type.
+        /// Defines the type based on <typeparamref name="T"/>
         /// </summary>
-        public Type Type { get; }
+        Type Type { get; }
         /// <summary>
-        /// Can be an int32 or another ScatterReadEntry
+        /// Can be an int32 or another ScatterReadEntry.
         /// </summary>
-        public object Size { get; set; }
+        object Size { get; set; }
         /// <summary>
-        /// True if the scatter read has failed. Result will also be null.
+        /// True if the Scatter Read has failed.
         /// </summary>
-        public bool IsFailed { get; set; }
+        bool IsFailed { get; set; }
 
         /// <summary>
         /// Sets the Result for this Scatter Read.
