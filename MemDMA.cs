@@ -62,7 +62,7 @@ namespace VmmFrost
                 }
                 try // Final Init
                 {
-                    HVmm = new Vmm("-printf", "-v", "-device", $"fpga", "-memmap", MemoryMapFile, "-waitinitialize");
+                    HVmm = new Vmm("-printf", "-v", "-device", "fpga", "-memmap", MemoryMapFile, "-waitinitialize");
                 }
                 catch (Exception ex)
                 {
@@ -329,7 +329,6 @@ namespace VmmFrost
         /// Read null terminated string (utf-8/default).
         /// </summary>
         /// <param name="length">Number of bytes to read.</param>
-        /// <exception cref="DMAException"></exception>
         public virtual string ReadString(ulong addr, uint length, bool useCache = true) // read n bytes (string)
         {
             try
@@ -353,7 +352,6 @@ namespace VmmFrost
         /// Write value type/struct to specified address.
         /// </summary>
         /// <typeparam name="T">Specified Value Type.</typeparam>
-        /// <param name="game">Game instance to write to.</param>
         /// <param name="addr">Address to write to.</param>
         /// <param name="value">Value to write.</param>
         public virtual void WriteValue<T>(ulong addr, T value)
@@ -375,7 +373,6 @@ namespace VmmFrost
         /// (Base)
         /// Perform a Scatter Write Operation.
         /// </summary>
-        /// <param name="game">Game instance to write to.</param>
         /// <param name="entries">Write entries.</param>
         public virtual void WriteScatter(params ScatterWriteEntry[] entries)
         {
