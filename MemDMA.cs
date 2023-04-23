@@ -219,7 +219,7 @@ namespace VmmFrost
                     {
                         scatter.pb
                             .AsSpan((int)pageOffset, (int)cb)
-                            .CopyTo(buffer.AsSpan().Slice(bytesCopied, (int)cb)); // Copy bytes to buffer
+                            .CopyTo(buffer.AsSpan(bytesCopied, (int)cb)); // Copy bytes to buffer
                         bytesCopied += (int)cb;
                     }
                     else // read failed -> set failed flag
