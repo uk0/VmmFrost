@@ -37,36 +37,50 @@ namespace VmmFrost
         /// (Base)
         /// Constructor.
         /// </summary>
-        /// <param name="isDebug">True if debug details should be emitted.</param>
-        /// <param name="fpgaAlgo">FPGA Algorithm (usually 0).</param>
-        public MemDMA()
+        /// <param name="args">(Optional) Custom Startup Args. If NULL default FPGA parameters will be used.</param>
+        /// <param name="autoMemMap">Automatic Memory Map Generation/Initialization. (Default: True)</param>
+        public MemDMA(string[] args = null, bool autoMemMap = true)
         {
-            /// Begin Init...
             try
             {
                 Debug.WriteLine("Loading memory module...");
-                if (!File.Exists(MemoryMapFile))
+                args ??= new string[] { "-printf", "-v", "-device", "fpga", "-waitinitialize" }; // Default args
+                if (autoMemMap)
                 {
-                    Debug.WriteLine("[DMA] No MemMap, attempting to generate...");
-                    try // Init for Memory Map Generation
+                    Debug.WriteLine("[DMA] Auto Mem Map");
+                    /// Check for Existing MemMap
+                    if (!File.Exists(MemoryMapFile))
                     {
-                        HVmm = new Vmm("-printf", "-v", "-device", "fpga", "-waitinitialize");
+                        try
+                        {
+                            Debug.WriteLine("[DMA] Generating Mem Map...");
+                            try // Init for Memory Map Generation
+                            {
+                                HVmm = new Vmm(args);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new DMAException("Vmm Init [FAIL]", ex);
+                            }
+                            GetMemMap();
+                        }
+                        finally
+                        {
+                            HVmm?.Dispose(); // Close FPGA Connection after getting map.
+                            HVmm = null; // Null Vmm Handle
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        throw new DMAException("FPGA Init Error!", ex);
-                    }
-                    GetMemMap();
-                    HVmm.Dispose(); // Close back down, re-init w/ map
-                    HVmm = null; // Null ref back out
+                    /// Append Memory Map Args
+                    var mapArgs = new string[] { "-memmap", MemoryMapFile };
+                    args = args.Concat(mapArgs).ToArray();
                 }
                 try // Final Init
                 {
-                    HVmm = new Vmm("-printf", "-v", "-device", "fpga", "-memmap", MemoryMapFile, "-waitinitialize");
+                    HVmm = new Vmm(args);
                 }
                 catch (Exception ex)
                 {
-                    throw new DMAException("FPGA Init Error!", ex);
+                    throw new DMAException("Vmm Init [FAIL]", ex);
                 }
             }
             catch (Exception ex)
@@ -109,7 +123,7 @@ namespace VmmFrost
             }
             catch (Exception ex)
             {
-                throw new DMAException("[DMA] MEM MAP ERROR", ex);
+                throw new DMAException("Failed to generate Mem Map!", ex);
             }
         }
 
